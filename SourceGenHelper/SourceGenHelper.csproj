@@ -4,7 +4,7 @@
     <RootNamespace>Myitian.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <Nullable>enable</Nullable>
-    <LangVersion>12.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <PackageId>Myitian.$(AssemblyName)</PackageId>
     <Authors>Myitian</Authors>
     <RepositoryUrl>https://github.com/Myitian/SourceGenHelper</RepositoryUrl>
@@ -12,6 +12,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>1.2.0</Version>
+    <Description>A helper for resolve symbols in source generation.</Description>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugType>none</DebugType>
