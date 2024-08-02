@@ -5,17 +5,19 @@ using System.Collections.ObjectModel;
 
 namespace Myitian.SourceGenHelper.SymbolWrappers;
 
-public class AttributeWrapper
+public readonly struct AttributeWrapper
 {
     private readonly AttributeData attribute;
+    private readonly TypeWrapper? attributeClass;
 
-    public TypeWrapper? AttributeClass => attribute.AttributeClass is null ? null : new(attribute.AttributeClass);
+    public TypeWrapper? AttributeClass => attributeClass;
     public ReadOnlyDictionary<string, TypedConstant> NamedArguments { get; }
     public ImmutableArray<TypedConstant> ConstructorArguments => attribute.ConstructorArguments;
 
     public AttributeWrapper(AttributeData attribute)
     {
         this.attribute = attribute;
+        attributeClass = attribute.AttributeClass is null ? null : new(attribute.AttributeClass);
         Dictionary<string, TypedConstant> namedArgs = [];
         foreach (KeyValuePair<string, TypedConstant> kvp in attribute.NamedArguments)
         {

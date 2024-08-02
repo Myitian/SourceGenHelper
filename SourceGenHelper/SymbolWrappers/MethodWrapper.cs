@@ -4,12 +4,16 @@ using System.Linq;
 
 namespace Myitian.SourceGenHelper.SymbolWrappers;
 
-public class MethodWrapper(IMethodSymbol symbol) : IMemberSymbolWrapper<IMethodSymbol>
+public readonly struct MethodWrapper(IMethodSymbol symbol) : IMemberSymbolWrapper<IMethodSymbol>
 {
+    private readonly ImmutableArray<AttributeWrapper> attributes = symbol.GetAttributes().ToImmutableAttributeWrapperArray();
+    private readonly ImmutableArray<ParameterWrapper> parameters = symbol.Parameters.Select(x => new ParameterWrapper(x)).ToImmutableArray();
+    private readonly TypeWrapper returnType = new(symbol.ReturnType);
+
     public IMethodSymbol Symbol { get; } = symbol;
-    public TypeWrapper ReturnType { get; } = new(symbol.ReturnType);
-    public ImmutableArray<AttributeWrapper> Attributes { get; } = symbol.GetAttributes().ToImmutableAttributeWrapperArray();
-    public ImmutableArray<ParameterWrapper> Parameters { get; } = symbol.Parameters.Select(x => new ParameterWrapper(x)).ToImmutableArray();
+    public TypeWrapper ReturnType => returnType;
+    public ImmutableArray<AttributeWrapper> Attributes => attributes;
+    public ImmutableArray<ParameterWrapper> Parameters => parameters;
     public string Name => Symbol.Name;
     public string MetadataName => Symbol.MetadataName;
     public bool IsStatic => Symbol.IsStatic;

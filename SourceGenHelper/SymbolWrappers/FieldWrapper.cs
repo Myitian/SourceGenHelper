@@ -3,11 +3,14 @@ using System.Collections.Immutable;
 
 namespace Myitian.SourceGenHelper.SymbolWrappers;
 
-public class FieldWrapper(IFieldSymbol symbol) : IContentSymbolWrapper<IFieldSymbol>, IMemberSymbolWrapper<IFieldSymbol>
+public readonly struct FieldWrapper(IFieldSymbol symbol) : IContentSymbolWrapper<IFieldSymbol>, IMemberSymbolWrapper<IFieldSymbol>
 {
+    private readonly ImmutableArray<AttributeWrapper> attributes = symbol.GetAttributes().ToImmutableAttributeWrapperArray();
+    private readonly TypeWrapper typeSymbol = new(symbol.Type);
+
     public IFieldSymbol Symbol { get; } = symbol;
-    public TypeWrapper TypeSymbol { get; } = new(symbol.Type);
-    public ImmutableArray<AttributeWrapper> Attributes { get; } = symbol.GetAttributes().ToImmutableAttributeWrapperArray();
+    public TypeWrapper TypeSymbol => typeSymbol;
+    public ImmutableArray<AttributeWrapper> Attributes => attributes;
     public string Name => Symbol.Name;
     public string MetadataName => Symbol.MetadataName;
     public bool IsStatic => Symbol.IsStatic;

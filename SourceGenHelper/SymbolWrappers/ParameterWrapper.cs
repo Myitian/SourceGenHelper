@@ -3,11 +3,14 @@ using System.Collections.Immutable;
 
 namespace Myitian.SourceGenHelper.SymbolWrappers;
 
-public class ParameterWrapper(IParameterSymbol symbol) : IContentSymbolWrapper<IParameterSymbol>
+public readonly struct ParameterWrapper(IParameterSymbol symbol) : IContentSymbolWrapper<IParameterSymbol>
 {
+    private readonly ImmutableArray<AttributeWrapper> attributes = symbol.GetAttributes().ToImmutableAttributeWrapperArray();
+    private readonly TypeWrapper typeSymbol = new(symbol.Type);
+
     public IParameterSymbol Symbol { get; } = symbol;
-    public TypeWrapper TypeSymbol { get; } = new(symbol.Type);
-    public ImmutableArray<AttributeWrapper> Attributes { get; } = symbol.GetAttributes().ToImmutableAttributeWrapperArray();
+    public TypeWrapper TypeSymbol => typeSymbol;
+    public ImmutableArray<AttributeWrapper> Attributes => attributes;
     public string Name => Symbol.Name;
     public string MetadataName => Symbol.MetadataName;
     public bool IsOptional => Symbol.IsOptional;

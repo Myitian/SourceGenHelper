@@ -21,10 +21,13 @@ public class TypeWrapper : IEquatable<TypeWrapper>, IEquatable<Type>, IEquatable
     protected ImmutableArray<PropertyWrapper> properties;
     protected ImmutableArray<MethodWrapper> methods;
     protected ImmutableArray<MethodWrapper> constructors;
+    protected bool isPartial;
 
     public TypeWrapper(ITypeSymbol symbol, bool lazy = true)
     {
         Symbol = symbol;
+        isPartial = (symbol.DeclaringSyntaxReferences[0].GetSyntax() is BaseTypeDeclarationSyntax dec)
+            && dec.Modifiers.Any(x => x.Text is "partial" or "Partial");
         if (!lazy)
         {
             Load();
@@ -153,8 +156,7 @@ public class TypeWrapper : IEquatable<TypeWrapper>, IEquatable<Type>, IEquatable
     public bool IsRecord => Symbol.IsRecord;
     public bool IsValueType => Symbol.IsValueType;
     public bool IsGenericType => NamedTypeSymbol is not null && NamedTypeSymbol.IsGenericType;
-    public bool IsPartial => (Symbol.DeclaringSyntaxReferences[0].GetSyntax() is BaseTypeDeclarationSyntax dec)
-        && dec.Modifiers.Any(x => x.Text is "partial" or "Partial");
+    public bool IsPartial => isPartial;
     public Accessibility DeclaredAccessibility => Symbol.DeclaredAccessibility;
 
     public void Load()
@@ -196,10 +198,10 @@ public class TypeWrapper : IEquatable<TypeWrapper>, IEquatable<Type>, IEquatable
                     break;
             }
         }
-        this.events = events.ToImmutableArray();
-        this.fields = fields.ToImmutableArray();
-        this.properties = properties.ToImmutableArray();
-        this.methods = methods.ToImmutableArray();
+        this.events = [.. events];
+        this.fields = [.. fields];
+        this.properties = [.. properties];
+        this.methods = [.. methods];
         Loaded = true;
     }
 
@@ -211,6 +213,8 @@ public class TypeWrapper : IEquatable<TypeWrapper>, IEquatable<Type>, IEquatable
             return Equals(wrapper);
         if (obj is Type type)
             return Equals(type);
+        if (obj is string str)
+            return Equals(str);
         return false;
     }
     public bool Equals(TypeWrapper other)
